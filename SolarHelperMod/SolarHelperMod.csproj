@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net4</TargetFramework>
+    <GenerateFullPaths>true</GenerateFullPaths>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--Set EmpyrionInstallDir to where the game is installed-->
+    <Reference Include="$(EmpyrionInstallDir)/Client/Empyrion_Data/Managed/UnityEngine.CoreModule.dll"/>
+    <Reference Include="../sample-empyrion-mod/DeathMessenger/dependencies/Assembly-CSharp-firstpass.dll"/>
+    <Reference Include="../sample-empyrion-mod/DeathMessenger/dependencies/ModApi.dll"/>
+    <Reference Include="../sample-empyrion-mod/Empyrion Mod/dependencies/Mif.dll"/>
+    <Reference Include="../sample-empyrion-mod/Empyrion Mod/dependencies/protobuf-net.dll"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SolarHelperMod_Info.yaml">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+</Project>

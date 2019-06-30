@@ -1,0 +1,11 @@
+# all parameters are optional
+
+Name: Solar Helper
+Description: Better CPU Control of multiple solar batteries
+Author: Kharzette
+Version: 0.1
+# Website: https://...
+
+# Possible targets: None, Dedi, PfServer, Client (the latter three can be combined)
+# Note: If not set 'Dedi' is the default
+ModTargets: PfServer
