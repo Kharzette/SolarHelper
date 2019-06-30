@@ -3,6 +3,7 @@ using System.Timers;
 using System.Collections.Generic;
 using Eleon.Modding;
 using System.Diagnostics;
+using UnityEngine;
 
 
 namespace SolarHelperMod
@@ -13,11 +14,11 @@ namespace SolarHelperMod
 
 		//list of loaded player base structures on the playfield
 		//may or may not have solar batteries
-		Dictionary<int, IStructure>	mStructs	=new Dictionary<int, IStructure>();
+		Dictionary<int, IStructure>	mStructs			=new Dictionary<int, IStructure>();
 
 		Timer	mBatTimer;
 
-		const int	BatteryCheckInterval	=15000;	//in MS
+		const int	BatteryCheckInterval	=25000;	//in MS
 
 
 		public void Init(IModApi modAPI)
@@ -31,7 +32,7 @@ namespace SolarHelperMod
 			mAPI.Application.OnPlayfieldUnloaded	+=OnPlayFieldUnLoaded;
 			mAPI.Application.GameEntered			+=OnGameEntered;
 
-			mBatTimer	=new FunTimer(BatteryCheckInterval, mStructs);
+			mBatTimer	=new Timer(BatteryCheckInterval);
 
 			mBatTimer.Elapsed	+=OnBatteryTimer;
 			mBatTimer.AutoReset	=true;
@@ -157,6 +158,38 @@ namespace SolarHelperMod
 		}
 
 
+		void BlockSearch(IStructure str)
+		{
+			//in my test case, the y is off by 128
+			VectorInt3	minWorld	=new VectorInt3(
+				str.MinPos.x,
+				str.MinPos.y + 128,
+				str.MinPos.z);
+
+			VectorInt3	maxWorld	=new VectorInt3(
+				str.MaxPos.x,
+				str.MaxPos.y + 128,
+				str.MaxPos.z);
+
+
+			for(int x=minWorld.x;x <= maxWorld.x;x++)
+			{
+				for(int y=minWorld.y;y <= maxWorld.y;y++)
+				{
+					for(int z=minWorld.z;z <= maxWorld.z;z++)
+					{
+						IBlock	bl	=str.GetBlock(x, y, z);
+
+						mAPI.Log("Block at " + x + ", " + y + ", " + z +
+								" custom name: " + bl.CustomName +
+								", Damage: " + bl.GetDamage() +
+								", HitPoints: " + bl.GetHitPoints());
+					}
+				}
+			}
+		}
+
+
 		void OnBatteryTimer(object sender, ElapsedEventArgs eea)
 		{
 			foreach(KeyValuePair<int, IStructure> str in mStructs)
@@ -176,10 +209,26 @@ namespace SolarHelperMod
 						", Content: " + str.Value.FuelTank.Content);
 				}
 
+				//located the battery through a prevous 3d search of
+				//the volume of the test base (offset by 128)
+				IDevice	bat	=str.Value.GetDevice<IDevice>(-5, 129, -1);
+				if(bat == null)
+				{
+					mAPI.Log("Bat null");
+				}
+				else
+				{
+					mAPI.Log("Got device: " + bat);
+				}
+
+				BlockSearch(str.Value);
+
 				IDevicePosList	idpl	=str.Value.GetDevices("AmmoCntr");
 				for(int i=0;i < idpl.Count;i++)
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
+
+					mAPI.Log("Device at pos: " + pos);
 
 					IContainer	con	=str.Value.GetDevice<IContainer>(pos);
 
@@ -191,6 +240,8 @@ namespace SolarHelperMod
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
 
+					mAPI.Log("Device at pos: " + pos);
+
 					IContainer	con	=str.Value.GetDevice<IContainer>(pos);
 
 					mAPI.Log("Container has " + con.VolumeCapacity + " volume.");
@@ -200,6 +251,8 @@ namespace SolarHelperMod
 				for(int i=0;i < idpl.Count;i++)
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
+
+					mAPI.Log("Device at pos: " + pos);
 
 					IContainer	con	=str.Value.GetDevice<IContainer>(pos);
 
@@ -211,6 +264,8 @@ namespace SolarHelperMod
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
 
+					mAPI.Log("Device at pos: " + pos);
+
 					ILcd	lcd	=str.Value.GetDevice<ILcd>(pos);
 
 					mAPI.Log("LCD says: " + lcd.GetText());
@@ -221,6 +276,8 @@ namespace SolarHelperMod
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
 
+					mAPI.Log("Device at pos: " + pos);
+
 					ILight	lt	=str.Value.GetDevice<ILight>(pos);
 
 					mAPI.Log("Light has range: " + lt.GetRange());
@@ -230,6 +287,8 @@ namespace SolarHelperMod
 				for(int i=0;i < idpl.Count;i++)
 				{
 					VectorInt3	pos	=idpl.GetAt(i);
+
+					mAPI.Log("Device at pos: " + pos);
 
 					IPortal	door	=str.Value.GetDevice<IPortal>(pos);
 

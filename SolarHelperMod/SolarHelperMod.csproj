@@ -14,7 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SolarHelperMod_Info.yaml">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
